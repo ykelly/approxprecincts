@@ -1,8 +1,10 @@
-
-
-## add documentation
-## probably don't need this one, but maybe have a plot function that is more basic
-
+#' Produces a simple plot of census blocks in the specified county and colors them based on precinct classification.
+#'
+#' @param x Voterfile dataframe, output from classify_nn()
+#' @param county String containing name of county to plot
+#'
+#'
+#' @export
 
 plot_precincts <- function(x, county){
   requireNamespace("ggplot2", quietly = TRUE)

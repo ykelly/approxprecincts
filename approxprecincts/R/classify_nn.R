@@ -1,7 +1,5 @@
 #' Classify each unclassified block with a precinct name based on the most frequent classification of the blocks in its neighborhood
 #'
-#' !Need to figure out what happens if there's a tie for most frequent classification of neighbors!
-#'
 #' @param x Voterfile dataframe, output from lookup_precincts_nn()
 #'
 #' @return x with 'PRECINCT_NAME' filled in for blocks with >=1 classified neighbor

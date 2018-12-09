@@ -1,6 +1,14 @@
 #' Geotag voterfile addresses with 2010 Census block GEOIDs
 #'
-#' We refer to "geotagging" as assigning a Census geography id to an address. This function takes addresses from a voterfile separated into residential address, city and state. It creates a vector of 2010 Census block GEOIDs that can be appended to the voterfile dataframe.
+#' We refer to "geotagging" as assigning a Census geography id to an address. This function takes addresses from a voter file separated into residential address, city and state. It creates a vector of 2010 Census block GEOIDs that can be appended to the voter file dataframe.
+#'
+#' Sometimes there is an error with the Census API and the function fails, but your progress will be saved. To find out where the function left off, run the code below, then rerun the geotag function with the new start value to continue:
+#'
+#' x %>% mutate(row = row_number()) %>%
+#'    select(BLOCK_GEOID, row) %>%
+#'    drop_na(BLOCK_GEOID) %>%
+#'    arrange(desc(row))
+#'
 #'
 #' @param x Voterfile dataframe \code{x}
 #' @param start Line in \code{x} to start geocoding from (updated from default value of 1 in case of geocoding error)
@@ -19,13 +27,17 @@
 #' @examples
 #' geotag_voterfile(voterfile, 'RESIDENTIAL_ADDRESS1', 'RESIDENTIAL_CITY', 'RESIDENTIAL_STATE')
 #'
+#' If the first run encounters an error and the last geocoded row is the 10000th, for example:
+#' geotag_voterfile(voterfile, start = 10001)
+#'
+#' Input the same file path as in the first run to overwrite your first file of geocoded addresses, or specify a new file path to create a new file for the second run.
+#'
 #' @export
 
-library(purrr)
 library(tigris)
 library(readr)
 
-geotag_voterfile <- function(x, start = 1, file_path, address_field = 'RESIDENTIAL_ADDRESS1', city_field = 'RESIDENTIAL_CITY',
+geotag_voterfile <- function(x, start = 1, file_path = ".", address_field = 'RESIDENTIAL_ADDRESS1', city_field = 'RESIDENTIAL_CITY',
                              state_field = 'RESIDENTIAL_STATE', runtime = TRUE){
   start_time <- Sys.time()
   if (start == 1) { x$BLOCK_GEOID <- NA }     # initialize column for GEOID if first run through function
@@ -36,14 +48,7 @@ geotag_voterfile <- function(x, start = 1, file_path, address_field = 'RESIDENTI
                                           x[[state_field]][i])
   }
 
-  i <- 8
-
   write_csv(x, file_path)      # write csv of progress, which is overwritten if this function is called again
-
-  if (i < nrow(x)) {         # save progress in new dataframe called countyname_new
-    stop(paste0("Geocoding interrupted. Your progress left off at line ", i, " and was saved in a vector.\nPlease run the code below to restart from this point:
-                              \ngeotag_voterfile(x = x_new, start = ", i+1, ")"))
-  }
 
   end_time <- Sys.time()
   runtime <- end_time - start_time
