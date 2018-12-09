@@ -37,7 +37,7 @@
 library(tigris)
 library(readr)
 
-geotag_voterfile <- function(x, start = 1, file_path = ".", address_field = 'RESIDENTIAL_ADDRESS1', city_field = 'RESIDENTIAL_CITY',
+geotag_voterfile <- function(x, start = 1, file_path = ".\\geotagged.csv", address_field = 'RESIDENTIAL_ADDRESS1', city_field = 'RESIDENTIAL_CITY',
                              state_field = 'RESIDENTIAL_STATE', runtime = TRUE){
   start_time <- Sys.time()
   if (start == 1) { x$BLOCK_GEOID <- NA }     # initialize column for GEOID if first run through function
